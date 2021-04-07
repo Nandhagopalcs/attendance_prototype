@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Attendance</title>
+    <meta name="viewport" content="width=device-width">
+</head>
+<body>
+    <div style="text-align: center;">
+        {% for x in val %}
+        <p>{{x}}</p>
+        {% endfor %}
+        {% for x in vall %}
+        <img src="{{url_for('static', filename=x)}}"  width="100" height="150"><br><br>
+        {% endfor %}
+        
+    </div>
+    <div style="text-align: center;">
+        <br><br>
+        <a href="{{'add'}}">Add students</a><br><br>
+        <a href="{{'attendance'}}">Check Attendance</a><br><br>
+        <a href="{{'index'}}">Home</a><br><br>
+        </div>
+</body>
+</html>
