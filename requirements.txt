@@ -4,9 +4,9 @@ cmake==0.7.1
 boost-py
 face-recognition
 face-recognition-models
+dlib>=19.3.0
 numpy
 Pillow
-dlib>=19.3.0
 dnspython==2.1.0
 Flask==1.1.2
 gunicorn==20.1.0
