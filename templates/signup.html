@@ -12,7 +12,7 @@
         <h1>Signup</h1>
         <form action="{{ url_for('sigup')}}" id="yform"  method="POST">
             <div class="txt_field">
-                <input type="number"  name="a_id" min="10000" max="99999" required>
+                <input type="number"  name="a_id"  required>
                 <label>personal id</label>
             </div>
             <div class="txt_field">
@@ -36,6 +36,21 @@
         </form>
         
 
+    </div>
+    <div>
+        {% if kk==1 and kkk==1 %}
+    	<h3> Existing Personal Id and college Id</h3>
+        {% endif%}
+    </div>
+    .<div>
+        {% if kk==1 and kkk==0 %}
+    	<h3> Existing Personal Id</h3>
+        {% endif %}
+    </div>
+    <div>
+        {% if  kkk==1 and kk==0 %}
+    	<h3> Existing  college Id</h3>
+        {% endif %}
     </div>
     
 </body>

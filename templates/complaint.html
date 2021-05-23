@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>complaint</title>
+    
+</head>
+<body>
+    <div class="center">
+        <h1>complaint</h1>
+        <form action="{{ url_for('complaint')}}" id="m"  method="POST">
+           
+            <label> Teacher:</label>
+            <div class="check" style="display: flex; align-items: center; justify-content: center;">
+                {% for j in dp %}
+                <input type="radio"  name="teach" value="{{j}}">
+                <label style="font-size: 16px;">{{j}}</label>
+                {% endfor %}
+                <textarea id="review" name="complaint" rows="4" cols="50"></textarea>
+                    <input type="submit" />
+            
+                
+        </form>
+    </div>
+
+    <a href="{{'redirect'}}" style="padding: 5px;">Home</a>
+    <div>
+        {% if  c==1%}
+    	<h3> Successfully filed</h3>
+        {% endif %}
+    </div>
+    
+    
+</body>
+</html>

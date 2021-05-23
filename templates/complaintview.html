@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>complaint</title>
+    
+</head>
+<body>
+    <div class="center">
+        <h1>complaints</h1>
+       
+        {%for x in information%}
+        <p>{{x['student']}}</p>
+        <p>{{x['date']}}</p>
+        <p>{{x['compaint']}}</p>
+        {%endfor%}
+
+    </div>
+
+
+
+
+    <a href="{{'redirect'}}" style="padding: 5px;">Home</a>
+    
+    
+    
+</body>
+</html>
