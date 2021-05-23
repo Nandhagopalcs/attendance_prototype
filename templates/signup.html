@@ -10,7 +10,7 @@
 <body>
     <div class="center">
         <h1>Signup</h1>
-        <form action="{{ url_for('sigup')}}" id="yform"  method="POST">
+        <form action="{{ url_for('sigup')}}" id="yform" enctype="multipart/form-data"  method="POST">
             <div class="txt_field">
                 <input type="number"  name="a_id"  required>
                 <label>personal id</label>
@@ -31,6 +31,7 @@
                 <input type="password" name="pwd" required>
                 <label>password</label>
             </div>
+            <input type="file" name="imagefile" >
             <input type="submit" />
             
         </form>

@@ -145,7 +145,13 @@ def sigup():
         if try_user is not None:
             return render_template('signup.html',kk=1,kkk=0)
 
-        past = {"_id": a_id,"name":a_name,"c_id":c_id,"c_name":c_name,"password":passw,"role":role}
+        image = request.files['imagefile']
+        basepath = os.path.dirname(__file__)
+        image.filename=a_id+".jpg"
+        file_path = os.path.join(basepath, 'static', secure_filename(image.filename))
+        image.save(file_path)
+
+        past = {"_id": a_id,"name":a_name,"c_id":c_id,"c_name":c_name,"password":passw,"role":role,"image":image.filename}
 
         log.insert_one(past)
         return render_template('login.html')
@@ -216,13 +222,17 @@ def creatingteacher():
         if try_user is not None:
             return render_template('teacheradd.html',dt=k,kkk=1)
         
-        
+        image = request.files['imagefile']
+        basepath = os.path.dirname(__file__)
+        image.filename=credent['p_id']+".jpg"
+        file_path = os.path.join(basepath, 'static', secure_filename(image.filename))
+        image.save(file_path)
         
         pt={"_id":credent['p_id'],"name":credent['t_name'],"college_id":session['college_id'],"college_name":session['college_name'],"password":credent['pwd'],"classes":ls}
         infot=db[session['college_id']+"_teachers"]
         infot.insert_one(pt)
         lg=db['login']
-        p={"_id":credent['p_id'],"name":credent['t_name'],"c_id":session['college_id'],"c_name":session['college_name'],"password":credent['pwd'],"role":str("teacher")}
+        p={"_id":credent['p_id'],"name":credent['t_name'],"c_id":session['college_id'],"c_name":session['college_name'],"password":credent['pwd'],"role":str("teacher"),"image":image.filename}
         lg.insert_one(p)
 
         return render_template('teacheradd.html',dt=k,kkk=0)
@@ -261,6 +271,7 @@ def creating():
         
         image = request.files['imagefile']
         basepath = os.path.dirname(__file__)
+        image.filename=p_id+".jpg"
         file_path = os.path.join(basepath, 'static', secure_filename(image.filename))
         image.save(file_path)
         print(file_path)
@@ -274,7 +285,7 @@ def creating():
         existing_user = check.find_one(({"class_name":clas}))
 
         infocs=db[session['college_id']+"_"+existing_user['_id']]
-        post = {"_id": p_id,"name":name,"c_id":session['college_id'],"c_name":session['college_name'],"password":pwd,"role":"student","class_id":existing_user['_id']}
+        post = {"_id": p_id,"name":name,"c_id":session['college_id'],"c_name":session['college_name'],"password":pwd,"role":"student","class_id":existing_user['_id'],"image":image.filename}
         pot = {"_id": p_id, "name":name,"encode":enc,"c_id":session['college_id'],"c_name":session['college_name'],"password":pwd,"class_id":existing_user['_id'],"class_name":clas}
         infocs.insert_one(pot)
         l.insert_one(post)
