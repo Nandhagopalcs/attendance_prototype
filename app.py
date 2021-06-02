@@ -21,6 +21,10 @@ app.secret_key="hi"
 
 @app.route('/')
 def home():
+    return render_template('landing.html')
+
+@app.route("/firstlog")
+def firstlog():
     return render_template('login.html')
 
 @app.route("/logging", methods=['GET', 'POST'])
@@ -69,11 +73,11 @@ def login():
                             countatt[a]+=1
                         
                     print(countatt)
-                    
                     dupli = att.find({})
+                    
 
 
-                    return render_template('studentview.html',data=existing_user,teachernames=teachernames, countatt= countatt,at=dupli)
+                    return render_template('studentview.html',data=existing_user,teachernames=teachernames, countatt= countatt,at=dupli,nam = session['personal_name'])
             else:
                 return render_template('login.html')
     else:
@@ -241,12 +245,20 @@ def creatingteacher():
 
 @app.route('/createstudent')
 def createstudent():
-    data=db[session['college_id']+"_classes"]
-    x=data.find({})
-    cd=[]
-    for y in x:
-        cd.append(y['class_name'])
-    return render_template('add.html',dt=cd)
+    if(session['role']=="admin"):
+        data=db[session['college_id']+"_classes"]
+        x=data.find({})
+        cd=[]
+        for y in x:
+            cd.append(y['class_name'])
+        return render_template('add.html',dt=cd)
+    elif(session['role']=="teacher"):
+        data=db[session['college_id']+"_teachers"]
+        existing_user = data.find_one(({"_id":session['personal_id']}))
+        cd=[]
+        cd=existing_user['classes']
+        return render_template('add.html',dt=cd)
+
 
 @app.route('/creatingstudent',methods=['GET','POST'])
 def creating():
@@ -295,18 +307,27 @@ def creating():
 
 @app.route('/attendance')
 def attendance():
-    data=db[session['college_id']+"_classes"]
-    x=data.find({})
-    cd=[]
-    for y in x:
-        cd.append(y['class_name'])
+    if(session['role']=="admin"):
+        data=db[session['college_id']+"_classes"]
+        x=data.find({})
+        cd=[]
+        for y in x:
+            cd.append(y['class_name'])
 
-    dat=db[session['college_id']+"_teachers"]
-    tr=[]
-    y=dat.find({})
-    for i in y:
-        tr.append(i['name'])
-    return render_template('attendance.html',dt=cd,dp=tr)
+        dat=db[session['college_id']+"_teachers"]
+        tr=[]
+        y=dat.find({})
+        for i in y:
+            tr.append(i['name'])
+            
+        return render_template('attendance.html',dt=cd,dp=tr,teacher=0)
+    elif(session['role']=="teacher"):
+        data=db[session['college_id']+"_teachers"]
+        existing_user = data.find_one(({"_id":session['personal_id']}))
+        cd=[]
+        cd=existing_user['classes']
+        return render_template('attendance.html',dt=cd,dp=session['personal_name'],teacher=1)
+
 
 
 @app.route('/find',methods=['Post'])
@@ -317,6 +338,36 @@ def find():
         tr=credent['teach']
         clsno=credent['num_cls']
         image=request.files['imgfile']
+        
+
+        check=db[session['college_id']+"_classes"]
+        existing_user = check.find_one(({"class_name":clas}))
+        coll=db[session['college_id']+"_"+existing_user['_id']+"_attendance"]
+        e_user = coll.find_one(({"_id":clsno}))
+        if e_user is not  None:
+            if(session['role']=="admin"):
+                data=db[session['college_id']+"_classes"]
+                x=data.find({})
+                cd=[]
+                for y in x:
+                     cd.append(y['class_name'])
+                
+                dat=db[session['college_id']+"_teachers"]
+                tr=[]
+                y=dat.find({})
+                for i in y:
+                    tr.append(i['name'])
+                return render_template('attendance.html',dt=cd,dp=tr,teacher=0,xs=1)
+            elif(session['role']=="teacher"):
+                data=db[session['college_id']+"_teachers"]
+                existing_user = data.find_one(({"_id":session['personal_id']}))
+                cd=[]
+                cd=existing_user['classes']
+                return render_template('attendance.html',dt=cd,dp=session['personal_name'],teacher=1,xs=1)
+
+        
+        
+        
         basepath = os.path.dirname(__file__)
         file_path = os.path.join(
                 basepath, 'static2', secure_filename(image.filename))
@@ -328,8 +379,9 @@ def find():
         facesCurFrame = face_recognition.face_locations(img)
         encodesCurFrame = face_recognition.face_encodings(img,facesCurFrame)
         #print(type(encodesCurFrame))
-        check=db[session['college_id']+"_classes"]
-        existing_user = check.find_one(({"class_name":clas}))
+        
+
+
 
         col=db[session['college_id']+"_"+existing_user['_id']]
         results= col.find({})
@@ -361,13 +413,13 @@ def find():
         today = date.today()
         d1 = today.strftime("%d/%m/%Y")
     
-        coll=db[session['college_id']+"_"+existing_user['_id']+"_attendance"]
         
-        postp = {"_id":clsno,"date":d1,"teacher":tr,"present":present,"absent":absent}
+        
+        postp = {"_id":clsno,"date":d1,"teacher":tr,"present":present,"absent":absent,"class_id":existing_user['_id']}
         coll.insert_one(postp)
 
         os.remove(file_path)
-        return render_template('attended.html',val=present,vall=absent)
+        return render_template('attended.html',val=present,vall=absent,numb=clsno,divasam=d1,class_info=existing_user['_id'])
 
 
 @app.route('/logout')
@@ -383,85 +435,115 @@ def logout():
 
 @app.route('/previous')
 def previous():
-    data=db[session['college_id']+"_classes"]
-    x=data.find({})
-    cd=[]
-    for y in x:
-        cd.append(y['class_name'])
+    if(session['role']=="admin"):
+        data=db[session['college_id']+"_classes"]
+        x=data.find({})
+        cd=[]
+        for y in x:
+            cd.append(y['class_name'])
+        return render_template('previous.html',dt=cd)
+    elif(session['role']=="teacher"):
+        data=db[session['college_id']+"_teachers"]
+        existing_user = data.find_one(({"_id":session['personal_id']}))
+        cd=[]
+        cd=existing_user['classes']
+        return render_template('previous.html',dt=cd)
 
-    
-    return render_template('previous.html',dt=cd)
 
 @app.route('/processing',methods=['GET','POST'])
 def processing():
     if request.method == 'POST':
-        
+        if(session['role']=="admin"):
+            data=db[session['college_id']+"_classes"]
+            x=data.find({})
+            cd=[]
+            for y in x:
+                cd.append(y['class_name'])
+            credent = request.form.to_dict()
+            clas=credent['class']
+            check=db[session['college_id']+"_classes"]        
+            existing_user = check.find_one(({"class_name":clas}))
+            infocs=db[session['college_id']+"_"+existing_user['_id']+"_attendance"]
+            x=infocs.find({})
+    
+            return render_template('previous.html',dt=cd,inf=x)
+        elif(session['role']=="teacher"):
+            data=db[session['college_id']+"_teachers"]
+            existing_user = data.find_one(({"_id":session['personal_id']}))
+            cd=[]
+            cd=existing_user['classes']
+            credent = request.form.to_dict()
+            clas=credent['class']
+            check=db[session['college_id']+"_classes"]        
+            existing_user = check.find_one(({"class_name":clas}))
+            infocs=db[session['college_id']+"_"+existing_user['_id']+"_attendance"]
+            x=infocs.find({})
+            return render_template('previous.html',dt=cd,inf=x)
+
+
+
+@app.route('/updateatt')
+def updateatt():
+    if(session['role']=="admin"):
         data=db[session['college_id']+"_classes"]
         x=data.find({})
         cd=[]
         for y in x:
             cd.append(y['class_name'])
-        credent = request.form.to_dict()
-        clas=credent['class']
-        check=db[session['college_id']+"_classes"]        
-        existing_user = check.find_one(({"class_name":clas}))
-        infocs=db[session['college_id']+"_"+existing_user['_id']+"_attendance"]
-        x=infocs.find({})
-    
-    return render_template('previous.html',dt=cd,inf=x)
 
-@app.route('/updateatt')
-def updateatt():
-    data=db[session['college_id']+"_classes"]
-    x=data.find({})
-    cd=[]
-    for y in x:
-        cd.append(y['class_name'])
+        return render_template('updateattendance.html',dt=cd)
+    elif(session['role']=="teacher"):
+        data=db[session['college_id']+"_teachers"]
+        existing_user = data.find_one(({"_id":session['personal_id']}))
+        cd=[]
+        cd=existing_user['classes']
+        return render_template('updateattendance.html',dt=cd)
+        
 
-    return render_template('updateattendance.html',dt=cd)
     
 @app.route('/update',methods=['GET','POST'])
 def update():
     if request.method == 'POST':
+        if(session['role']=="admin"):
+            data=db[session['college_id']+"_classes"]
+            x=data.find({})
+            cd=[]
+            for y in x:
+                cd.append(y['class_name'])
+        elif(session['role']=="teacher"):
+            data=db[session['college_id']+"_teachers"]
+            existing_user = data.find_one(({"_id":session['personal_id']}))
+            cd=[]
+            cd=existing_user['classes']
+
+
+        credent = request.form.to_dict()
+        clas=credent['class']
+        uniq=credent['num_cls']
+        
+        check=db[session['college_id']+"_classes"]        
+        existing_user = check.find_one(({"class_name":clas}))
+        infocs=db[session['college_id']+"_"+existing_user['_id']+"_attendance"]
+        copy = infocs.find_one(({"_id":uniq}))
+        
+        return render_template('attended.html',val=copy['present'],vall=copy['absent'],numb=copy['_id'],divasam=copy['date'],class_info=existing_user['_id'])
+        
+
+@app.route('/editing',methods=['GET','POST'])
+def editing():
+    if(session['role']=="admin"):
         data=db[session['college_id']+"_classes"]
         x=data.find({})
         cd=[]
         for y in x:
             cd.append(y['class_name'])
-
-        credent = request.form.to_dict()
-        clas=credent['class']
-        nam=credent['person']
-        uniq=credent['num_cls']
-        status=credent['status']
-        check=db[session['college_id']+"_classes"]        
-        existing_user = check.find_one(({"class_name":clas}))
-        infocs=db[session['college_id']+"_"+existing_user['_id']+"_attendance"]
-        copy = infocs.find_one(({"_id":uniq}))
-        oldp=copy['present']
-        olda=copy['absent']
-        if status=="present":
-            olda.remove(nam)
-            oldp.append(nam)
-        if status=="absent":
-            olda.append(nam)
-            oldp.remove(nam)
-
-        myquery = { "_id": uniq }
-        newvalues = { "$set": { "present":oldp,"absent":olda } }
-        infocs.update_one(myquery, newvalues)
-        existing = infocs.find_one(({"_id":uniq}))
-
-        return render_template('updateattendance.html',dt=cd,newp=existing['present'],newa=existing['absent'],st=1)
-
-@app.route('/editing',methods=['GET','POST'])
-def editing():
-    data=db[session['college_id']+"_classes"]
-    x=data.find({})
-    cd=[]
-    for y in x:
-        cd.append(y['class_name'])
-    return render_template('edit.html',dt=cd)
+            return render_template('edit.html',dt=cd)
+    elif(session['role']=="teacher"):
+        data=db[session['college_id']+"_teachers"]
+        existing_user = data.find_one(({"_id":session['personal_id']}))
+        cd=[]
+        cd=existing_user['classes']  
+        return render_template('edit.html',dt=cd)
 
 
 @app.route('/edit',methods=['GET','POST'])
@@ -537,8 +619,35 @@ def view():
     copy = dat.find(({"teacher":session['personal_name']}))
     return render_template('complaintview.html',information=copy)
 
-   
+@app.route('/sendstat',methods=['GET','POST'])
+def sendstat():
+    if request.method =='POST':
+        req = request.form
+        student = req.get("student")
+        classno = req.get("classno")
+        change_state = req.get("change_State")
+        class_id = req.get("class_id")
+        
+        chgd=db[session['college_id']+"_"+class_id+"_attendance"]
+        copy = chgd.find_one(({"_id":classno}))
+        oldp=copy['present']
+        olda=copy['absent']
+        if(change_state=="absent"):
+            olda.append(student)
+            oldp.remove(student)
+        elif(change_state=="present"):
+            olda.remove(student)
+            oldp.append(student)
+        
+        myquery = { "_id":classno }
+        newvalues = { "$set": { "present":oldp,"absent":olda } }
+        chgd.update_one(myquery, newvalues)
+        now = chgd.find_one(({"_id":classno}))
+        return render_template('attended.html',val=now['present'],vall=now['absent'],numb=now['_id'],divasam=now['date'],class_info=now['class_id'])
 
+    
+
+       
 
 if __name__ == '__main__':
     app.run(debug=True)

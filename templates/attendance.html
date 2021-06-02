@@ -22,6 +22,8 @@
                 <label style="font-size: 16px;">{{z}}</label>
                 {% endfor %}
             </div>
+            
+            {%if teacher==0%}
             <label> Teacher:</label>
             <div class="check" style="display: flex; align-items: center; justify-content: center;">
                 {% for j in dp %}
@@ -29,6 +31,13 @@
                 <label style="font-size: 16px;">{{j}}</label>
                 {% endfor %}
             </div>
+            {%elif teacher==1%}
+            <div>
+                <input type = "hidden" name = "teach" value = "{{dp}}" />
+            </div>
+            {%endif%}
+            
+            
             <div class = "imagefile" style="display: flex; align-items: center; justify-content: center;padding-top: 15px;padding-bottom: 15px;">
                 <input type="file" name="imgfile" >
             </div>
@@ -39,6 +48,9 @@
             </div>
         </form>
     </div>
+    {%if xs==1%}
+    <h4>Class number Exist</h4>
+    {%endif%}
 
 .
     

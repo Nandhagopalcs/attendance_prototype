@@ -1,98 +1,115 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta charset="UTF-8">
+	<title>Student</title>
+	<link rel="stylesheet" href="{{url_for('static', filename='student.css')}}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <title>Student</title>
-    <link rel="stylesheet" href="{{url_for('static', filename='admin.css')}}">
+	<script src="https://kit.fontawesome.com/b99e675b6e.js"></script>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
 </head>
-<body style="min-height:100vh">
-    <div class = "center">
-        <h1>Welcome {{data['name'] | safe }} </h1>
-        <hr>
-
-        <div class="container">
-            <div class="row">
-                <div class="col">
-                    <div class="card" style="width: 18rem; margin: 0 auto;">
-                        <img src="https://images.unsplash.com/photo-1599508704512-2f19efd1e35f?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=675&q=80" class="card-img-top" alt="...">
-                        <div class="card-body">
-                            <h3 style="text-align: center;">{{data['role']}}</h3>
-                        </div>
-                    </div>
-                </div>
-
-
-                <div class="col ">
-                    <div class="colclass" style="background: #FAF0E6; border-radius: 20; margin-top: 10px;">
-                        <div class="row">
-                            <div class="col">
-                                <h3 style="text-align: center;">Name: {{data['name'] | safe }}</h3>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                                <h3 style="text-align: center;">Role: {{data['role'] | safe }}</h3>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                                <h3 style="text-align: center;">Collage ID: {{data['c_id'] | safe }}</h3>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                                <h3 style="text-align: center;">Collage Name: {{data['c_name'] | safe }}</h3>
-                            </div>
-                        </div>
-                    </div>
-
-                    <hr>
-
-                    <h2>Attendance</h2>
-                    <div style="background: white;">
-                   
-                    <canvas id="myChart" width="100%" height="30"></canvas>
-                    </div>
-
-
-                    
-                    <hr>
-                    <div class="row">
-                        <div class="col d-flex p-2">
-                            <a href="{{'redirect'}}">home</a>
-                        </div>
-                        <div class="col d-flex p-2">
-                            <a href="{{'logout'}}">logout</a>
-                        </div>
-                    </div>
-
-                </div>
-
-
-
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light " style="background: rgba(0,0,0,0.6);">
+        <div class="container-fluid" style="font-size: 20px;">
+          <a class="navbar-brand" href="#" style="margin-left:5%;"><i class="fas fa-atlas" style="font-size: 1.5em;"></i></a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div class="navbar-nav" style="margin-left: 7vh;">
+              <a class="nav-link" href="{{'logout'}}"><i class="fab fa-github"></i></a>
+              <a class="nav-link active" aria-current="page" href="#">Home</a>
+              <a class="nav-link" href="{{'logout'}}">Logout</a>
+              
+             
+              
             </div>
-
+          </div>
         </div>
+    </nav>
 
+    <div class="wrapper">
+        <div class="left" style="background: linear-gradient(to right,#14ad00f1,#0bff03);">
+            <img src="{{url_for('static', filename=data['image'])}}"  alt="..." width="100">
+            <h4>{{data['name'] | safe }}</h4>
+            <p>{{data['role'] | safe }}</p>
+        </div>
+        <div class="right">
+            <div class="info">
+                <h3>Information</h3>
+                <div class="info_data">
+                    <div class="data">
+                        <h4>Name</h4>
+                        <p>{{data['name'] | safe }}</p>
+                    </div>
+                    <div class="data">
+                    <h4>Role</h4>
+                        <p>{{data['role'] | safe }}</p>
+                    </div>
+                    <div class="data">
+                        <h4>Collage Id</h4>
+                        <p>{{data['c_id'] | safe }}</p>
+                    </div>
+                    <div class="data">
+                        <h4>Collage Name</h4>
+                        <p>{{data['c_name'] | safe }}</p>
+                    </div>
+                </div>
+            </div>
+        
+        <div class="projects">
+                <h3>Attendance Graph</h3>
+                <div class="projects_data">
+                    <div class="data">
+                        <canvas id="myChart" width="100%" height="40vh"></canvas>
+                </div>
+                </div>
+            </div>
+        
+            <div class="social_media">
+                <ul>
+                <li style="background: linear-gradient(to right,#14ad00f1,#0bff03);border-radius: 5px;"><a href="#"><i class="fab fa-facebook-f"></i></a></li>
+                <li style="background: linear-gradient(to right,#14ad00f1,#0bff03);border-radius: 5px;"><a href="#"><i class="fab fa-twitter"></i></a></li>
+                <li style="background: linear-gradient(to right,#14ad00f1,#0bff03);border-radius: 5px;"><a href="#"><i class="fab fa-instagram"></i></a></li>
+            </ul>
+        </div>
+        </div>
     </div>
-    <img src="{{url_for('static', filename=data['image'])}}"  alt="...">
-    <div>
-        <a href="{{'file'}}" style="padding: 5px;">complaint</a>
-             {% for x in at %}
-             <p>{{x['_id']}} :</p>
-            <p>{{x['teacher']}} :</p>
-            <p>{{x['date']}} </p>
-          {%if data['personal_name'] in x['present']%}    
-            <p>present</p>
-            {% else %}
-            <p>absent</p>
-           {% endif%}
-            {% endfor %} 
+    <h2 style="text-align: center; margin-top: 3vh;">Function</h2>
+        <div style="display: flex; justify-content: center; margin-bottom: 10vh;">
+            <a href="{{'file'}}" class="btn btn-info">complain</a>
         </div>
+        
+        <div style="text-align: center; padding-bottom: 5px;">
+            <h2>Attendance Collection</h2>
+            
+             <table class="table table-dark table-striped table-hover" style="margin: 0 auto;text-align: center;max-width: 80%; margin-bottom: 10px;">
+                <tr>
+                    <th>Class Id</th>
+                    <th>Teacher</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                  </tr>
+                 
+                    {% for x in at %}
+                    <tr>
+                        <td>{{x['_id']}}</td>
+                        <td>{{x['teacher']}}</td>
+                        <td>{{x['date']}}</td>
+                        {% if nam in x['present'] %}    
+                        <td>present</td>
+                        {% else %}
+                        <td>absent</td>
+                       {% endif%}
+                        
+                    </tr>
+                    {% endfor %}  
+                  
+        
+            </table> 
+
+
+
 </body>
 <script >
     var xValues = {{ teachernames | safe }};
@@ -112,6 +129,4 @@ new Chart("myChart", {
 });
 
 </script>
-
-    
 </html>
