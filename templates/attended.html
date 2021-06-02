@@ -22,10 +22,12 @@
             {% for x in val %}
                 <tr>
                 
-                    <td>{{x}}</td>
+                    <td>{{x[0]}}</td>
+                    
+                    <td><img src="{{url_for('static', filename=x[1]+'.jpg')}}" class="card-img-top" alt="..."></td>
                     
                     <td><form action="sendstat" method="post">
-                        <input type = "hidden" name = "student" value = {{x}} />
+                        <input type = "hidden" name = "student" value = {{x[0]}} />
                         <input type = "hidden" name = "classno" value = {{numb}} />
                         <input type = "hidden" name = "change_State" value = "absent" />
                         <input type = "hidden" name = "class_id" value = "{{class_info}}" />
@@ -49,9 +51,11 @@
             {% for x in vall %}
                 <tr>
                 
-                    <td>{{x}}</td>
+                    <td>{{x[0]}}</td>
+                    <td><img src="{{url_for('static', filename=x[1]+'.jpg')}}" class="card-img-top" alt="..."></td>
                     <td><form action="sendstat" method="post">
-                        <input type = "hidden" name = "student" value = {{x}} />
+                        <input type = "hidden" name = "student" value = {{x[0]}} />
+                        <input type="hidden" name="id" value={{x[1]}} />
                         <input type = "hidden" name = "classno" value = {{numb}} />
                         <input type = "hidden" name = "change_State" value = "present" />
                         <input type = "hidden" name = "class_id" value = "{{class_info}}" />

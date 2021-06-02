@@ -400,15 +400,24 @@ def find():
                 if matches[matchIndex]:
                     name = classNames[matchIndex]
                     #print(name)
-                    PresentNames.append(name)
+                    used=col.find_one(({"name":name}))
+                    PresentNames.append([name,used['_id']])
+        present=list()
         
-        setname = set(PresentNames)
-        present=list(setname)
-        
+        for names in PresentNames:
+            if names not in present:
+                present.append(names)
+
+
+        present_dupli=[]
+        for i in range(len(present)):
+            present_dupli.append(present[i][0])
+             
         absent=[]
         for a in classNames:
-            if a not in present:
-                absent.append(a)
+            if a not in present_dupli:
+                used=col.find_one(({"name":a}))
+                absent.append([a,used['_id']])
         
         today = date.today()
         d1 = today.strftime("%d/%m/%Y")
@@ -624,21 +633,31 @@ def sendstat():
     if request.method =='POST':
         req = request.form
         student = req.get("student")
+        ird=req.get("id")
         classno = req.get("classno")
         change_state = req.get("change_State")
         class_id = req.get("class_id")
-        
+        print(student)
         chgd=db[session['college_id']+"_"+class_id+"_attendance"]
         copy = chgd.find_one(({"_id":classno}))
         oldp=copy['present']
         olda=copy['absent']
-        if(change_state=="absent"):
-            olda.append(student)
-            oldp.remove(student)
-        elif(change_state=="present"):
-            olda.remove(student)
-            oldp.append(student)
         
+        if(change_state=="absent"):
+            olda.append([student,ird])
+            for i in range(len(oldp)):
+                if oldp[i]==[student,ird]:
+                    oldp.remove([student,ird])
+            #oldp.remove([student,ird])
+        elif(change_state=="present"):
+            #olda.remove([student,ird])
+            oldp.append([student,ird])
+            for i in range(len(olda)):
+                if olda[i]==[student,ird]:
+                    olda.remove([student,ird])
+
+        print(olda)
+        print(oldp)
         myquery = { "_id":classno }
         newvalues = { "$set": { "present":oldp,"absent":olda } }
         chgd.update_one(myquery, newvalues)
