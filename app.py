@@ -643,25 +643,21 @@ def sendstat():
         oldp=copy['present']
         olda=copy['absent']
         
+
+        
         if(change_state=="absent"):
             olda.append([student,ird])
-            for i in range(len(oldp)):
-                if oldp[i]==[student,ird]:
-                    oldp.remove([student,ird])
-            #oldp.remove([student,ird])
+            oldp.remove([student,ird])
         elif(change_state=="present"):
-            #olda.remove([student,ird])
             oldp.append([student,ird])
-            for i in range(len(olda)):
-                if olda[i]==[student,ird]:
-                    olda.remove([student,ird])
-
-        print(olda)
-        print(oldp)
+            olda.remove([student,ird])
+        
         myquery = { "_id":classno }
         newvalues = { "$set": { "present":oldp,"absent":olda } }
         chgd.update_one(myquery, newvalues)
         now = chgd.find_one(({"_id":classno}))
+        print("database:")
+        print(now)
         return render_template('attended.html',val=now['present'],vall=now['absent'],numb=now['_id'],divasam=now['date'],class_info=now['class_id'])
 
     
