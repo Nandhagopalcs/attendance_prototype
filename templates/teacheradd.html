@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student signup</title>
+    <title>Teacher signup</title>
     <link rel = "icon" href = 
     "http://pngimg.com/uploads/letter_a/letter_a_PNG24.png" 
             type = "image/x-icon">
@@ -12,55 +12,50 @@
 </head>
 <body>
     <div class="center">
-        <h1>Student Signup</h1>
-        <form action="{{ url_for('creating')}}" id="myform" enctype="multipart/form-data" method="POST">
+        <h1>Teacher Signup</h1>
+        <form action="{{url_for('creatingteacher')}}" id="yform" enctype="multipart/form-data" method="POST">
             <div class="txt_field">
                 <input type="number"  name="p_id"  required>
                 <label>personal id</label>
             </div>
             <div class="txt_field">
-                <input type="text"  name="name" required>
+                <input type="text"  name="t_name" required>
                 <label>name</label>
             </div>
-            <div class="check" style="display: flex; align-items: center; justify-content: center;">
+            
+            <div  class="check" style="display: flex; align-items: center; justify-content: center;">
+            </div>
+                <div>
+                <label for="class">select class and subject :</label>
+                <select name="class" id="class" multiple>
                 {% for z in dt %}
-                <input type="radio"  name="class" value="{{z}}" required>
-                <label style="font-size: 16px;">{{z}}</label>
+                <option value="{{z}}" >{{z}}</option>
                 {% endfor %}
             </div>
-            <div class = "imagefile" style="display: flex; align-items: center; justify-content: center;padding-top: 15px;">
-                <input type="file" name="imagefile" >
-            </div>
-            
-
 
             <div class="txt_field">
-                <input type="password" name="pwd" required>
+                <br><br><input type="password" name="pwd" required>
                 <label>password</label>
             </div>
-            <input type="submit" />
-            <div class="signup_link">
-                <a href="{{'redirect'}}" style="padding: 5px;">Home</a>
-                <a href="{{'attendance'}}">Check Attendance</a>
+            <div class="txt_field">
+                <input type="file" name="imagefile" >
             </div>
+            <input type="submit" />
 
+            
+            <div class="signup_link">
+                <a href="{{'redirect'}}">Home</a>
+            </div>
         </form>
-    </div>
+        
 
-    <div style="text-align: center;">
-    {%  if st %}
-        <p>successfully added </p>
-        <p>{{val_name}}</p>
-    {% endif %}
     </div>
-   
     <div>
-        {% if ex==1 %}
+        {% if  kkk==1%}
     	<h3> Existing  personal Id</h3>
         {% endif %}
     </div>
-        
-    .
-
-</body>
+    
+  .  
+</body>     
 </html>

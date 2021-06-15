@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    
+    <title>Attendance update</title>
+    <link rel = "icon" href = 
+    "http://pngimg.com/uploads/letter_a/letter_a_PNG24.png" 
+            type = "image/x-icon">
+    <meta name="viewport" content="width=device-width">
+    <link rel="stylesheet" href="{{url_for('static', filename='login.css')}}">
+</head>
+<body>
+    <div class="center">
+        <h1>Check attendance</h1>
+        
+        <form action="{{ url_for('update')}}" id="myform" enctype="multipart/form-data" method="POST">
+            <div class="txt_field">
+                <input type="number"  name="time"  required>
+                <label>Time</label>
+                <input type="date"  name="day"  required>
+                
+            </div>
+            <div class="check" style="display: flex; align-items: center; justify-content: center;">
+                {% for z in dt %}
+                <input type="radio"  name="class" value="{{z}}">
+                <label >{{z}}</label>
+                {% endfor %}
+            </div>
+            
+            <input type="submit" />
+            <div class="signup_link">
+                <a href="{{'redirect'}}">Home</a>
+            </div>
+
+
+            
+                
+        </form>
+    </div>
+    <div >
+        {% if st==1 %}
+        <div style="position:absolute; height: 100vh; width: 100%; background-color: white; display: flex;align-items: center;justify-content: center;flex-direction: column;">
+            <h2>Present :</h2>
+        {% for x in newp %}
+            <h4>{{x}}</h4>
+            {% endfor %}
+       
+            <h2>Absent :</h2>
+            {% for x in newa %}
+                <h4>{{x}}</h4>
+                {% endfor %}
+          
+        {%endif%}
+        
+        </div>
+        
+        
+       .
+
+    </div>
+    
+</body>
+
+</html>
