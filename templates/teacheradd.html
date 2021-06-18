@@ -9,6 +9,18 @@
     "http://pngimg.com/uploads/letter_a/letter_a_PNG24.png" 
             type = "image/x-icon">
     <link rel="stylesheet" href="{{url_for('static', filename='login.css')}}">
+    <style>
+        #sele {
+                border-radius: 4px;
+                height: 25px;
+                color: grey;
+            }
+            #fi {
+                border-radius: 4px;
+                height: 25px;
+                color: grey;
+            }
+    </style>
 </head>
 <body>
     <div class="center">
@@ -23,21 +35,28 @@
                 <label>name</label>
             </div>
             
-            <div  class="check" style="display: flex; align-items: center; justify-content: center;">
-            </div>
-                <div>
-                <label for="class">select class and subject :</label>
+            <!-- <div  class="check" style="display: flex; align-items: center; justify-content: center;">
+            </div> -->
+            <div>   
+                <label style="color: gray;">select class and subject :</label>
+                <!-- <br>
                 <select name="class" id="class" multiple>
                 {% for z in dt %}
-                <option value="{{z}}" >{{z}}</option>
-                {% endfor %}
+                    <option value="{{z}}" >{{z}}</option>
+                {% endfor %} -->
+                <select name="class" id="sele">
+                    {% for z in dt %}
+                        <option value="{{z}}" >{{z}}</option>
+                    {% endfor %} 
+                    
+                </select>    
             </div>
-
+            
             <div class="txt_field">
-                <br><br><input type="password" name="pwd" required>
+                <input type="password" name="pwd" required>
                 <label>password</label>
             </div>
-            <div class="txt_field">
+            <div class="txt_field" id="fi" style="color: gray;">
                 <input type="file" name="imagefile" >
             </div>
             <input type="submit" />

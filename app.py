@@ -1,13 +1,16 @@
+from flask.helpers import send_file
 import numpy as np
 from flask import Flask, request, jsonify, render_template,session
 import pickle
 import face_recognition
 import cv2
 import os
+from numpy.lib.function_base import append
 from werkzeug.utils import secure_filename
 import pymongo
 from datetime import date
-
+import csv
+from pathlib import Path
 
 client = pymongo.MongoClient("mongodb+srv://nandhu:hinandhu100@cluster0.q49fb.mongodb.net/attendance?retryWrites=true&w=majority")
 db = client['attendance']
@@ -51,28 +54,70 @@ def login():
                     return render_template('adminview.html',data=existing_user,cl=y,t=z)
                 elif existing_user['role']=="teacher":
                     cla=db[session['college_id']+"_classes"]
-                    y=cla.find({})                    
+                    y=cla.find({})   
+
+
+
                     return render_template('teacherview.html',data=existing_user,cl=y)
                 elif existing_user['role']=="student":
                     att=db[session['college_id']+"_"+existing_user['class_id']+"_attendance"]
                     x=att.find({})
-                    subjects=set()
-                    
-                    
+                    # sub = db[session['college_id']+"_classes"]
+                    # sub = sub.findOne({ "_id":existing_user['class_id']})
+
+                    subjectName=set()
                     for i in x:
-                        subjects.add(i['subject'])
-                    subjects = list(subjects)
+                        subjectName.add(i['subject'])
+                    subjectName = list(subjectName)
+                    countatt=[]
+                    
+                    print(subjectName)
+                    for i in subjectName:
+                        countatt.append(0)
+                    
+                    dupli = att.find({})
+                    for i in dupli:
+                        if [session['personal_name'],session['personal_id']] in i['present']:
+                            a = subjectName.index(i['subject'])
+                            countatt[a]+=1
+                   
+                    
+                    dupli = att.find({})
+                    totalAttendance = [0 for i in subjectName]
+                    for i in dupli:
+                        ind = subjectName.index(i['subject'])
+                        totalAttendance[ind]+=1
+                    avgAttendance = [0 for i in subjectName]
+                   
+                    for i in range(len(countatt)):
+                        avgAttendance[i] = int((countatt[i]/totalAttendance[i])*100)
                     
                 
                     dupli = att.find({})
                     
+                    x=att.find({})
+                    # x = list(x)
+                    
+                    # filename = "university_records.csv"
+  
+                    # # writing to csv file
+                    # with open(filename, 'w') as csvfile:
+                    #     # creating a csv writer object
+                    #     csvwriter = csv.writer(csvfile)
                         
+                    #     # writing the fields
+                    #     fields = [x[0]['_id'],x[0]['subject'],x[0]['class_id']]
+                    #     csvwriter.writerow(fields)
+                        
+                        
+                        
+           
                     
                 
                    
 
 
-                    return render_template('studentview.html',data=existing_user,teachernames=subjects,at=dupli,nam = [session['personal_name'],session['personal_id']])
+                    return render_template('studentview.html',data=existing_user,teachernames=subjectName,countatt= countatt,at=dupli,nam = [session['personal_name'],session['personal_id']],avgAttendance = avgAttendance, totalAttendance=totalAttendance,subjectNames=subjectName,presentAtt = countatt)
             else:
                 return render_template('login.html')
     else:
@@ -89,13 +134,14 @@ def redirect():
         return render_template('adminview.html',data=existing_user,cl=y,t=z)
     elif existing_user['role']=="teacher":
             cla=db[session['college_id']+"_classes"]
+            
             y=cla.find({})                    
             return render_template('teacherview.html',data=existing_user,cl=y)
     elif existing_user['role']=="student":
             att=db[session['college_id']+"_"+existing_user['class_id']+"_attendance"]
             x=att.find({})
             teachernames=set()
-            print(type(x))
+            
             
             for i in x:
                 teachernames.add(i['subject'])
@@ -110,7 +156,7 @@ def redirect():
                         a = teachernames.index(i['teacher'])
                         countatt[a]+=1
                         
-            print(countatt)
+           
                     
             return render_template('studentview.html',data=existing_user,teachernames=teachernames, countatt= countatt)
             
@@ -444,7 +490,11 @@ def logout():
     session.pop("personal_id",None)
     session.pop("personal_name",None)
     session.pop("role",None)
-
+    file = "attendance.csv"
+    my_file = Path(file)
+    if my_file.is_file():
+         os.remove("attendance.csv")
+   
     return render_template('login.html')
 
 
@@ -464,6 +514,7 @@ def previous():
         existing_user = data.find_one(({"_id":session['personal_id']}))
         cd=[]
         cd=existing_user['intermediate']
+        
         return render_template('previous.html',dt=cd)
 
 
@@ -485,7 +536,7 @@ def processing():
             infocs=db[session['college_id']+"_"+existing_user['_id']+"_attendance"]
             x=infocs.find({"subject":clas})
     
-            return render_template('previous.html',dt=cd,inf=x)
+            return render_template('previous1.html',dt=cd,inf=x)
         elif(session['role']=="teacher"):
             data=db[session['college_id']+"_teachers"]
             existing_user = data.find_one(({"_id":session['personal_id']}))
@@ -498,7 +549,79 @@ def processing():
             existing_user = check.find_one(({"class_name":only_classname }))
             infocs=db[session['college_id']+"_"+existing_user['_id']+"_attendance"]
             x=infocs.find({"subject":clas})
+
+            studentNames = []
+            temp = x[0]['present']
+            for i in range(len(temp)):
+                studentNames.append(temp[i][0])
+            temp = x[0]['absent']
+            for i in range(len(temp)):
+                studentNames.append(temp[i][0])
+            
+
+            x = list(x)
+            idlist = ["Names"]
+            for i in range(len(x)):
+                idlist.append(x[i]['_id'])
+
+            attend= [idlist]
+            for i in range(len(studentNames)):
+                dummy = [studentNames[i]]
+                for j in range(len(x)):
+                    if x[j]['present']:
+                        if studentNames[i] in x[j]['present'][0]:
+                            dummy.append("present")
+                        else:
+                            dummy.append("absent")
+                    else:
+                        dummy.append("absent")
+                attend.append(dummy)
+
+
+            print(attend)
+            filename = "attendance.csv"
+            
+            
+            # writing to csv file
+            with open(filename, 'w') as csvfile:
+                csvwriter = csv.writer(csvfile)
+            # creating a csv writer object
+                for i in range(len(attend)):
+                    
+                    csvwriter.writerow(attend[i])
+
+
+                
+                        
+             # writing the fields
+            
+               
+
+
+
+
+            
             return render_template('previous.html',dt=cd,inf=x)
+
+@app.route('/download')
+def download():
+    
+    
+    # path = os.path.join(app.instance_path, filename)
+
+    # def generate():
+    #     with open(path) as f:
+    #         yield from f
+
+    #     os.remove(path)
+
+    # r = app.response_class(generate(), mimetype='text/csv')
+    # r.headers.set('Content-Disposition', 'attachment', filename='data.csv')
+    # return r
+    p = "attendance.csv"
+    
+    return send_file(p, as_attachment=True)
+
 
 
 
@@ -657,11 +780,7 @@ def sendstat():
         class_data = req.get("dates")
         class_time = req.get("times")
     
-        print(student)
-        print(ird)
-        print(classno)
-        print(change_state)
-        print(class_id)
+        
         chgd=db[session['college_id']+"_"+class_id+"_attendance"]
         copy = chgd.find_one(({"_id":classno}))
         oldp=copy['present']
@@ -682,8 +801,7 @@ def sendstat():
         newvalues = { "$set": { "present":oldp,"absent":olda } }
         chgd.update_one(myquery, newvalues)
         now = chgd.find_one(({"_id":classno}))
-        print("database:")
-        print(now)
+       
         return render_template('attended.html',val=now['present'],vall=now['absent'],divasam=class_data,samayam=class_time,class_info=now['class_id'],simple=classno)
 
     

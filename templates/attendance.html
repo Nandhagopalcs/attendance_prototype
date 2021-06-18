@@ -9,6 +9,22 @@
     "http://pngimg.com/uploads/letter_a/letter_a_PNG24.png" 
             type = "image/x-icon">
     <link rel="stylesheet" href="{{url_for('static', filename='login.css')}}">
+    <style>
+        #sele {
+                border-radius: 4px;
+                height: 25px;
+                color: grey;
+            }
+        #fi {
+                border-radius: 4px;
+                height: 25px;
+                color: grey;
+        }
+        #date{
+            color: grey;
+        }
+    </style>
+
 </head>
 <body>
     <div class="center">
@@ -18,23 +34,32 @@
                 <label>Time:</label>
                 <input type="number"  name="time" required>
             </div>
-            <div>
-                <label>Date:</label>
+            <div style="padding-bottom: 20px; color: grey;">
+                <label style="color: grey;">Date:</label>
                 <input type="date" id="date" name="dat" required>
 
             </div>
-            <label> Class: </label>
-            <div class="check" style="display: flex; align-items: center; justify-content: center;">
+           
+            <div>   
+                <label style="color: gray;">select class:</label>
+                <select name="class" id="sele">
+                    {% for z in dt %}
+                        <option value="{{z}}" >{{z}}</option>
+                    {% endfor %} 
+                    
+                </select>    
+            </div>
+            <!-- <div class="check" style="display: flex; align-items: center; justify-content: center;">
                 {% for z in dt %}
                 <input type="radio"  name="class" value="{{z}}">
                 <label style="font-size: 16px;">{{z}}</label>
                 {% endfor %}
-            </div>
+            </div> -->
             
             
             
             
-            <div class = "imagefile" style="display: flex; align-items: center; justify-content: center;padding-top: 15px;padding-bottom: 15px;">
+            <div class = "imagefile" style="display: flex; align-items: center; justify-content: center;padding-top: 15px;padding-bottom: 20px;color: grey;">
                 <input type="file" name="imgfile" >
             </div>
             <input type="submit" />

@@ -30,7 +30,7 @@ body{
 .wrapper .left{
   width: 35%;
   background: linear-gradient(to right,#01a9ac,#01dbdf);
-  min-height: 50vh;
+  min-height: 100%;
   padding: 30px 25px;
   border-top-left-radius: 5px;
   border-bottom-left-radius: 5px;
@@ -49,7 +49,7 @@ body{
 }
 
 .wrapper .left p{
-  font-size: 12px;
+  font-size: 16px;
 }
 
 .wrapper .right{
