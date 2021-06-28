@@ -447,7 +447,7 @@ def find():
         for encodeFace,faceLoc in zip(encodesCurFrame,facesCurFrame):
             matches = face_recognition.compare_faces(encodeListKnown,encodeFace)
             faceDis = face_recognition.face_distance(encodeListKnown,encodeFace)
-            if min(faceDis) < 0.55:
+            if min(faceDis) < 0.54:
                 matchIndex = np.argmin(faceDis)
                 if matches[matchIndex]:
                     name = classNames[matchIndex]
@@ -549,45 +549,64 @@ def processing():
             existing_user = check.find_one(({"class_name":only_classname }))
             infocs=db[session['college_id']+"_"+existing_user['_id']+"_attendance"]
             x=infocs.find({"subject":clas})
-
+           
+            tri=db[session['college_id']+"_"+existing_user['_id']]
+            y=tri.find({},{"_id":0,"name":1})
             studentNames = []
-            temp = x[0]['present']
-            for i in range(len(temp)):
-                studentNames.append(temp[i][0])
-            temp = x[0]['absent']
-            for i in range(len(temp)):
-                studentNames.append(temp[i][0])
+            # temp = x[0]['present']
+            
+            # for i in range(len(temp)):
+            #     studentNames.append(temp[i][0])
+            # temp = x[0]['absent']
+            # for i in range(len(temp)):
+            #     studentNames.append(temp[i][0])
+            studentNam = list(y)
+            for i in range(len(studentNam)):
+                studentNames.append(studentNam[i]["name"])
+                
+            
+            print(studentNames)
+            print(type(studentNames))
             
 
             x = list(x)
             idlist = ["Names"]
+
             for i in range(len(x)):
                 idlist.append(x[i]['_id'])
-
+            # print(x[5]['present'][0][0])
             attend= [idlist]
             for i in range(len(studentNames)):
                 dummy = [studentNames[i]]
                 for j in range(len(x)):
                     if x[j]['present']:
-                        if studentNames[i] in x[j]['present'][0]:
-                            dummy.append("present")
-                        else:
-                            dummy.append("absent")
+                        # if studentNames[i] in x[j]['present'][0]:
+                        #     dummy.append("present")
+                        # else:
+                        #     dummy.append("absent")
+                        for k in range(len(x[j]['present'])):
+                            if studentNames[i] == x[j]['present'][k][0]:
+                                dummy.append("present")
+                            
+                            else:
+                                dummy.append("absent")
+
                     else:
                         dummy.append("absent")
                 attend.append(dummy)
 
 
             print(attend)
-            filename = "attendance.csv"
+            filename = "attendance1.csv"
             
-            
+          
             # writing to csv file
             with open(filename, 'w') as csvfile:
                 csvwriter = csv.writer(csvfile)
             # creating a csv writer object
+           
                 for i in range(len(attend)):
-                    
+
                     csvwriter.writerow(attend[i])
 
 
@@ -618,9 +637,15 @@ def download():
     # r = app.response_class(generate(), mimetype='text/csv')
     # r.headers.set('Content-Disposition', 'attachment', filename='data.csv')
     # return r
-    p = "attendance.csv"
+#****************************************************************************************
+    # p = "attendance.csv"
     
-    return send_file(p, as_attachment=True)
+    # return send_file(p, as_attachment=True)
+    print("hellllo")
+    path = "attendance1.csv"
+    return send_file(path, as_attachment=True)
+
+   
 
 
 
