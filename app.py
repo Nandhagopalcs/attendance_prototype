@@ -419,10 +419,10 @@ def find():
 
         
         
-        
+        namx=d1+".jpg"
         basepath = os.path.dirname(__file__)
         file_path = os.path.join(
-                basepath, 'static2', secure_filename(image.filename))
+                basepath, 'static2', secure_filename(namx))
         
         image.save(file_path)
         print(file_path)
@@ -479,7 +479,7 @@ def find():
         coll.insert_one(postp)
 
         os.remove(file_path)
-        print(d1)
+        #print(d1)
         return render_template('attended.html',val=present,vall=absent,divasam=d2,samayam=time,class_info=existing_user['_id'],simple=d1)
 
 
@@ -515,7 +515,7 @@ def previous():
         cd=[]
         cd=existing_user['intermediate']
         
-        return render_template('previous.html',dt=cd)
+        return render_template('previous1.html',dt=cd)
 
 
 @app.route('/processing',methods=['GET','POST'])
@@ -698,8 +698,10 @@ def update():
         existing_user = check.find_one(({"class_name":only_classname}))
         infocs=db[session['college_id']+"_"+existing_user['_id']+"_attendance"]
         copy = infocs.find_one(({"_id":uniq}))
-        
-        return render_template('attended.html',val=copy['present'],vall=copy['absent'],divasam=uniq_d,samayam=uniq_t,class_info=existing_user['_id'],simple=uniq)
+        if(copy==None):
+            return render_template('updateattendance.html',know=1)
+        else:
+            return render_template('attended.html',val=copy['present'],vall=copy['absent'],divasam=uniq_d,samayam=uniq_t,class_info=existing_user['_id'],simple=uniq)
         
 
 @app.route('/editing',methods=['GET','POST'])
@@ -710,12 +712,14 @@ def editing():
         cd=[]
         for y in x:
             cd.append(y['class_name'])
-            return render_template('edit.html',dt=cd)
+        print(cd)
+        return render_template('edit.html',dt=cd)
     elif(session['role']=="teacher"):
         data=db[session['college_id']+"_teachers"]
         existing_user = data.find_one(({"_id":session['personal_id']}))
         cd=[]
         cd=existing_user['classes']  
+        print(cd)
         return render_template('edit.html',dt=cd)
 
 
@@ -751,7 +755,7 @@ def edit():
         
         
 
-        return render_template('added.html',val_name=name,val_id=p_id,st=1,usi=image.filename)
+        return render_template('add_1.html',val_name=name,val_id=p_id,st=1,usi=image.filename)
 
 
 
@@ -830,6 +834,8 @@ def sendstat():
         return render_template('attended.html',val=now['present'],vall=now['absent'],divasam=class_data,samayam=class_time,class_info=now['class_id'],simple=classno)
 
     
+
+
 
        
 
